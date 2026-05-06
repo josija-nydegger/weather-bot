@@ -17,6 +17,12 @@ An automated Telegram bot that sends a daily weather forecast for Bern, Switzerl
 - **Telegram Bot API** — message delivery
 - **GitHub Actions** — daily cron execution
 
+## Cost
+
+This bot uses the [OpenWeatherMap One Call API 3.0](https://openweathermap.org/api/one-call-3) which includes **1,000 free API calls per day**. This bot makes 1 call per day, so it runs completely free of charge.
+
+Note: A credit card is required to subscribe to One Call API 3.0, but you will not be charged as long as you stay within the free tier. It is recommended to set your daily call limit to 1,000 in your OpenWeatherMap account to avoid any accidental charges.
+
 ## Setup
 
 ### 1. Prerequisites
@@ -28,7 +34,7 @@ An automated Telegram bot that sends a daily weather forecast for Bern, Switzerl
 ### 2. Fork or clone this repository
 
 ```bash
-git clone https://github.com/your-username/weather-bot.git
+git clone https://github.com/josija-nydegger/weather-bot.git
 ```
 
 ### 3. Set GitHub Secrets
@@ -68,6 +74,7 @@ cron: "30 4 * * *"   # 05:30 CET (UTC+1)
 Go to **Actions → Weather Bot → Run workflow** to trigger the bot instantly without waiting for the scheduled run.
 
 ## Example message
+```
 🌤 Weather Tuesday, May 6 — Bern
 🌡 11°C – 18°C
 🌧 Rain probability: 40%
@@ -76,6 +83,7 @@ Go to **Actions → Weather Bot → Run workflow** to trigger the bot instantly 
 🌅 Sunrise: 06:12
 🌇 Sunset: 20:48
 📋 Partly cloudy
+```
 
 ## License
 
