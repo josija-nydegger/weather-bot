@@ -2,12 +2,14 @@ name: Wetter-Bot
 
 on:
   schedule:
-    - cron: "30 3 * * *"   # täglich 06:30 UTC = 07:30/08:30 Schweizer Zeit
+    - cron: "30 3 * * *"   # täglich 5:30 Uhr Schweiter Sommerzeit
   workflow_dispatch:        # manueller Start zum Testen
 
 jobs:
   sende-wetter:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
 
       - uses: actions/checkout@v4.2.2
