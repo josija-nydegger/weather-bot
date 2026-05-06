@@ -1,5 +1,9 @@
 # 🌤 Weather Bot
 
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![GitHub Actions](https://img.shields.io/badge/Automated-GitHub%20Actions-green)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
 An automated Telegram bot that sends a daily weather forecast for Bern, Switzerland every morning at 05:30 (Central European Summer Time).
 
 ## Features
