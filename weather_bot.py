@@ -1,3 +1,5 @@
+print("Script startet...", flush=True)
+
 import os
 import requests
 from datetime import datetime, timezone
@@ -21,6 +23,8 @@ def hole_wetterdaten():
     r = requests.get(url, params=params, timeout=10)
     r.raise_for_status()
     return r.json()
+daten = hole_wetterdaten()
+print("Wetterdaten erhalten:", daten["city"]["name"], flush=True)
 
 def erstelle_nachricht(daten):
     heute = daten["daily"][0]
@@ -49,3 +53,19 @@ def erstelle_nachricht(daten):
 
     msg += f"📋 {beschreibung}"
     return msg
+nachricht = erstelle_nachricht(daten)
+print("Nachricht:", nachricht, flush=True)
+
+def sende_telegram(text):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {"chat_id": CHAT_ID, "text": text, "parse_mode": "Markdown"}
+    r = requests.post(url, json=payload, timeout=10)
+    r.raise_for_status()
+
+if __name__ == "__main__":
+    daten = hole_wetterdaten()
+    nachricht = erstelle_nachricht(daten)
+    sende_telegram(nachricht)
+    print("Nachricht gesendet:", nachricht)
+sende_telegram(nachricht)
+print("Telegram OK", flush=True)
