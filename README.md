@@ -1,62 +1,82 @@
-# 🌤 Wetter-Bot
+# 🌤 Weather Bot
 
-Ein automatischer Telegram-Bot der täglich um 05:30 Uhr (Schweizer Sommerzeit) eine Wettervorhersage für Bern sendet.
+An automated Telegram bot that sends a daily weather forecast for Bern, Switzerland every morning at 05:30 (Central European Summer Time).
 
 ## Features
 
-- Tagestemperatur (Min/Max)
-- Regenwahrscheinlichkeit und erwartete Regenmenge
-- Uhrzeiten mit Regen (>30% Wahrscheinlichkeit)
-- Sonnenauf- und -untergang
-- Automatischer Versand via Telegram
+- Daily temperature (min/max)
+- Rain probability and expected rainfall in mm
+- Hours with rain likely (>30% probability)
+- Sunrise and sunset times
+- Fully automated via GitHub Actions
 
-## Technologien
+## Tech Stack
 
 - **Python 3.12**
-- **OpenWeatherMap One Call API 3.0** — Wetterdaten
-- **Telegram Bot API** — Nachrichtenversand
-- **GitHub Actions** — tägliche Ausführung per Cron
+- **OpenWeatherMap One Call API 3.0** — weather data
+- **Telegram Bot API** — message delivery
+- **GitHub Actions** — daily cron execution
 
-## Einrichtung
+## Setup
 
-### 1. Voraussetzungen
+### 1. Prerequisites
 
-- OpenWeatherMap-Konto mit One Call API 3.0 Abonnement
-- Telegram Bot (via [@BotFather](https://t.me/BotFather) erstellen)
+- OpenWeatherMap account with an active [One Call API 3.0](https://openweathermap.org/api/one-call-3) subscription
+- Telegram Bot created via [@BotFather](https://t.me/BotFather)
+- Your Telegram Chat ID (send `/start` to your bot, then call `https://api.telegram.org/bot<TOKEN>/getUpdates`)
 
-### 2. GitHub Secrets setzen
+### 2. Fork or clone this repository
 
-Im Repository unter **Settings → Secrets and variables → Actions** drei Secrets anlegen:
+```bash
+git clone https://github.com/your-username/weather-bot.git
+```
 
-| Secret | Beschreibung |
+### 3. Set GitHub Secrets
+
+Go to **Settings → Secrets and variables → Actions** and add:
+
+| Secret | Description |
 |---|---|
-| `OWM_API_KEY` | OpenWeatherMap API-Key |
-| `TELEGRAM_BOT_TOKEN` | Token von BotFather |
-| `CHAT_ID` | Deine Telegram Chat-ID |
+| `OWM_API_KEY` | Your OpenWeatherMap API key |
+| `TELEGRAM_BOT_TOKEN` | Token from BotFather |
+| `CHAT_ID` | Your Telegram chat ID |
 
-### 3. Standort anpassen
+### 4. Adjust location
 
-In `weather_bot.py` die Koordinaten auf deinen Standort setzen:
+In `weather_bot.py`, set your coordinates:
 
 ```python
-LAT, LON = 46.948, 7.4474  # Bern
+LAT, LON = 46.948, 7.4474  # Bern, Switzerland
 ```
 
-## Ausführung
+### 5. Adjust timezone
 
-Der Bot läuft automatisch täglich um 03:30 UTC (05:30 MESZ). Manuell starten:
+The default offset is CEST (UTC+2). In winter, change to CET (UTC+1):
 
-**GitHub → Actions → Wetter-Bot → Run workflow**
-
-## Beispiel-Nachricht
-
+```python
+SWISS_OFFSET = timedelta(hours=1)  # CET (winter)
 ```
-🌤 Wetter Dienstag, 6. Mai in Bern
+
+And update the cron schedule in `.github/workflows/weather.yml` accordingly:
+
+```yaml
+cron: "30 4 * * *"   # 05:30 CET (UTC+1)
+```
+
+## Running manually
+
+Go to **Actions → Weather Bot → Run workflow** to trigger the bot instantly without waiting for the scheduled run.
+
+## Example message
+🌤 Weather Tuesday, May 6 — Bern
 🌡 11°C – 18°C
-🌧 Regenwahrscheinlichkeit: 40%
-💧 Erwartete Regenmenge: 2.3 mm
-⏰ Regen möglich um: 14:00, 17:00 Uhr
-🌅 Sonnenaufgang: 06:12 Uhr
-🌇 Sonnenuntergang: 20:48 Uhr
-📋 Leicht bewölkt
-```
+🌧 Rain probability: 40%
+💧 Expected rainfall: 2.3 mm
+⏰ Rain possible at: 14:00, 17:00
+🌅 Sunrise: 06:12
+🌇 Sunset: 20:48
+📋 Partly cloudy
+
+## License
+
+MIT
