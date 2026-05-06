@@ -1,5 +1,3 @@
-print("Script startet...", flush=True)
-
 import os
 import requests
 from datetime import datetime, timezone
@@ -8,7 +6,6 @@ OWM_KEY   = os.environ["OWM_API_KEY"]
 BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_ID   = os.environ["TELEGRAM_CHAT_ID"]
 
-# Koordinaten statt Stadtname (genauer)
 LAT, LON = 46.948, 7.4474  # Bern
 
 def hole_wetterdaten():
@@ -18,24 +15,21 @@ def hole_wetterdaten():
         "appid": OWM_KEY,
         "units": "metric",
         "lang": "de",
-        "exclude": "minutely,current,alerts",  # nur daily + hourly
+        "exclude": "minutely,current,alerts",
     }
     r = requests.get(url, params=params, timeout=10)
     r.raise_for_status()
     return r.json()
-daten = hole_wetterdaten()
-print("Wetterdaten erhalten:", daten["city"]["name"], flush=True)
 
 def erstelle_nachricht(daten):
     heute = daten["daily"][0]
-    stunden = daten["hourly"][:24]  # nächste 24h
+    stunden = daten["hourly"][:24]
 
     temp_min = heute["temp"]["min"]
     temp_max = heute["temp"]["max"]
     beschreibung = heute["weather"][0]["description"].capitalize()
     regen_chance = int(heute.get("pop", 0) * 100)
 
-    # Stunden mit Regen > 30% Wahrscheinlichkeit
     regen_zeiten = []
     for h in stunden:
         if h.get("pop", 0) >= 0.3:
@@ -53,8 +47,6 @@ def erstelle_nachricht(daten):
 
     msg += f"📋 {beschreibung}"
     return msg
-nachricht = erstelle_nachricht(daten)
-print("Nachricht:", nachricht, flush=True)
 
 def sende_telegram(text):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
@@ -67,5 +59,3 @@ if __name__ == "__main__":
     nachricht = erstelle_nachricht(daten)
     sende_telegram(nachricht)
     print("Nachricht gesendet:", nachricht)
-sende_telegram(nachricht)
-print("Telegram OK", flush=True)
