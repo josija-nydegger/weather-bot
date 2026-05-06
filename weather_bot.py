@@ -29,6 +29,18 @@ def hole_wetterdaten():
 def unix_zu_lokalzeit(ts):
     return datetime.fromtimestamp(ts, tz=timezone.utc) + SCHWEIZ_OFFSET
 
+def hole_weather_overview():
+    url = "https://api.openweathermap.org/data/3.0/onecall/overview"
+    params = {
+        "lat": LAT, "lon": LON,
+        "appid": OWM_KEY,
+        "units": "metric",
+    }
+    r = requests.get(url, params=params, timeout=10)
+    r.raise_for_status()
+    return r.json()["weather_overview"]
+
+
 def erstelle_nachricht(daten):
     heute = daten["daily"][0]
     stunden = daten["hourly"][:24]
@@ -75,6 +87,7 @@ def erstelle_nachricht(daten):
     msg += f"🌅 Sonnenaufgang: {aufgang} Uhr\n"
     msg += f"🌇 Sonnenuntergang: {untergang} Uhr\n"
     msg += f"📋 {beschreibung}"
+    msg += f"\n💬 _{overview}_"
     return msg
 
 def sende_telegram(text):
@@ -85,6 +98,7 @@ def sende_telegram(text):
 
 if __name__ == "__main__":
     daten = hole_wetterdaten()
+    overview = hole_weather_overview()
     nachricht = erstelle_nachricht(daten)
     sende_telegram(nachricht)
     print("Nachricht gesendet:", nachricht)
