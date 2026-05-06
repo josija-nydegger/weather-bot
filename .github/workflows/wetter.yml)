@@ -2,7 +2,7 @@ name: Wetter-Bot
 
 on:
   schedule:
-    - cron: "30 6 * * *"   # täglich 06:30 UTC = 07:30/08:30 Schweizer Zeit
+    - cron: "30 3 * * *"   # täglich 06:30 UTC = 07:30/08:30 Schweizer Zeit
   workflow_dispatch:        # manueller Start zum Testen
 
 jobs:
