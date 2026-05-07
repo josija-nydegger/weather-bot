@@ -29,6 +29,37 @@ def fetch_weather():
 def unix_to_local(ts):
     return datetime.fromtimestamp(ts, tz=timezone.utc) + SWISS_OFFSET
 
+def group_rain_times(hours):
+    """Groups consecutive rainy hours into ranges, single hours stay as-is."""
+    rainy = [h for h in hours if h.get("pop", 0) >= 0.3]
+    if not rainy:
+        return []
+
+    groups = []
+    current_group = [rainy[0]]
+
+    for h in rainy[1:]:
+        prev_dt = unix_to_local(current_group[-1]["dt"])
+        curr_dt = unix_to_local(h["dt"])
+        # Hours are consecutive if exactly 1 hour apart
+        if (curr_dt - prev_dt) == timedelta(hours=1):
+            current_group.append(h)
+        else:
+            groups.append(current_group)
+            current_group = [h]
+    groups.append(current_group)
+
+    result = []
+    for group in groups:
+        start = unix_to_local(group[0]["dt"]).strftime("%H:%M")
+        if len(group) == 1:
+            result.append(start)
+        else:
+            end = unix_to_local(group[-1]["dt"]).strftime("%H:%M")
+            result.append(f"{start} – {end}")
+
+    return result
+
 def build_message(data):
     today = data["daily"][0]
     hours = data["hourly"][:24]
@@ -51,12 +82,8 @@ def build_message(data):
     sunrise = unix_to_local(today["sunrise"]).strftime("%H:%M")
     sunset  = unix_to_local(today["sunset"]).strftime("%H:%M")
 
-    # Hours with rain probability > 30%
-    rain_times = []
-    for h in hours:
-        if h.get("pop", 0) >= 0.3:
-            time = unix_to_local(h["dt"]).strftime("%H:%M")
-            rain_times.append(time)
+    # Grouped rain times
+    rain_groups = group_rain_times(hours)
 
     msg = f"🌤 *Weather {date_str} — Bern*\n"
     msg += f"🌡 {temp_min:.0f}°C – {temp_max:.0f}°C\n"
@@ -67,8 +94,8 @@ def build_message(data):
     else:
         msg += f"💧 No rainfall expected\n"
 
-    if rain_times:
-        msg += f"⏰ Rain possible at: {', '.join(rain_times[:4])}\n"
+    if rain_groups:
+        msg += f"⏰ Rain possible at: {', '.join(rain_groups)}\n"
     else:
         msg += "☀️ No significant rain expected\n"
 
