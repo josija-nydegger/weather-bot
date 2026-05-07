@@ -12,14 +12,15 @@ An automated Telegram bot that sends a daily weather forecast for Bern, Switzerl
 - Rain probability and expected rainfall in mm
 - Hours with rain likely (>30% probability)
 - Sunrise and sunset times
-- Fully automated via GitHub Actions
+- Fully automated via GitHub Actions and cron-job.org
 
 ## Tech Stack
 
 - **Python 3.12**
 - **OpenWeatherMap One Call API 3.0** — weather data
 - **Telegram Bot API** — message delivery
-- **GitHub Actions** — daily cron execution
+- **GitHub Actions** — workflow execution
+- **cron-job.org** — reliable cron scheduling (free)
 
 ## Cost
 
@@ -34,6 +35,7 @@ Note: A credit card is required to subscribe to One Call API 3.0, but you will n
 - OpenWeatherMap account with an active [One Call API 3.0](https://openweathermap.org/api/one-call-3) subscription
 - Telegram Bot created via [@BotFather](https://t.me/BotFather)
 - Your Telegram Chat ID (send `/start` to your bot, then call `https://api.telegram.org/bot<TOKEN>/getUpdates`)
+- [cron-job.org](https://cron-job.org) account (free)
 
 ### 2. Fork or clone this repository
 
@@ -73,11 +75,36 @@ And update the cron schedule in `.github/workflows/weather.yml` accordingly:
 cron: "30 4 * * *"   # 05:30 CET (UTC+1)
 ```
 
+### 6. Set up cron-job.org
+
+GitHub Actions does not guarantee exact cron execution times for inactive repositories. To ensure the bot runs reliably at 05:30, set up an external trigger via [cron-job.org](https://cron-job.org):
+
+1. Create a free account on [cron-job.org](https://cron-job.org)
+2. Create a new cronjob with this URL:
+```
+https://api.github.com/repos/YOUR-USERNAME/weather-bot/actions/workflows/weather.yml/dispatches
+```
+3. Set method to **POST**
+4. Add headers:
+```
+Authorization: Bearer YOUR_GITHUB_TOKEN
+Accept: application/vnd.github+json
+Content-Type: application/json
+```
+5. Set body to:
+```json
+{"ref": "main"}
+```
+6. Set timezone to `Europe/Zurich` and time to `05:30`
+
+For the GitHub Token, go to **GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → New token** and select the `workflow` scope.
+
 ## Running manually
 
 Go to **Actions → Weather Bot → Run workflow** to trigger the bot instantly without waiting for the scheduled run.
 
 ## Example message
+
 ```
 🌤 Weather Tuesday, May 6 — Bern
 🌡 11°C – 18°C
