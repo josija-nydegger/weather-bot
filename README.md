@@ -10,7 +10,7 @@ An automated Telegram bot that sends a daily weather forecast for Bern, Switzerl
 
 - Daily temperature (min/max)
 - Rain probability and expected rainfall in mm
-- Hours with rain likely (>30% probability)
+- Consecutive rainy hours shown as ranges (e.g. `10:00 – 12:00`), single hours shown individually
 - Sunrise and sunset times
 - Fully automated via GitHub Actions and cron-job.org
 
@@ -110,7 +110,7 @@ Go to **Actions → Weather Bot → Run workflow** to trigger the bot instantly 
 🌡 11°C – 18°C
 🌧 Rain probability: 40%
 💧 Expected rainfall: 2.3 mm
-⏰ Rain possible at: 14:00, 17:00
+⏰ Rain possible at: 08:00 – 11:00, 15:00, 18:00 – 20:00
 🌅 Sunrise: 06:12
 🌇 Sunset: 20:48
 📋 Partly cloudy
