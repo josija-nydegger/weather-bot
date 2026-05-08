@@ -62,7 +62,10 @@ def group_rain_times(hours):
 
 def build_message(data):
     today = data["daily"][0]
-    hours = data["hourly"][:24]
+
+    # Only hours belonging to today (local date)
+    today_date = (datetime.now(timezone.utc) + SWISS_OFFSET).date()
+    hours = [h for h in data["hourly"] if unix_to_local(h["dt"]).date() == today_date]
 
     # Date
     now = unix_to_local(today["dt"])
